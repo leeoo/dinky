@@ -296,7 +296,7 @@ UPDATE dinky_history SET config_json=JSON_REMOVE(config_json, '$.jarTask');
 UPDATE dinky_history SET config_json=JSON_REMOVE(config_json, '$.session');
 alter table dinky_history add batch_model boolean default false null after job_manager_address;
 
-INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (218, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE print', 'Whole library synchronization print', 'EXECUTE CDCSOURCE demo_print WITH (
+INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (218, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE print', 'Entire database synchronization print', 'EXECUTE CDCSOURCE demo_print WITH (
   \'connector\' = \'mysql-cdc\',
   \'hostname\' = \'127.0.0.1\',
   \'port\' = \'3306\',
@@ -308,7 +308,7 @@ INSERT INTO dinky_flink_document (id, category, type, subtype, name, description
   \'table-name\' = \'test\\.student,test\\.score\',
   \'sink.connector\' = \'print\'
 );', 'All Versions', 0, 1, '2023-10-31 16:01:45', '2023-12-28 00:02:57', null, null);
-INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (219, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE doris', 'Whole library synchronization doris', 'EXECUTE CDCSOURCE demo_print WITH (
+INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (219, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE doris', 'Entire database synchronization doris', 'EXECUTE CDCSOURCE demo_doris WITH (
   \'connector\' = \'mysql-cdc\',
   \'hostname\' = \'127.0.0.1\',
   \'port\' = \'3306\',
@@ -318,9 +318,9 @@ INSERT INTO dinky_flink_document (id, category, type, subtype, name, description
   \'scan.startup.mode\' = \'initial\',
   \'parallelism\' = \'1\',
   \'table-name\' = \'test\\.student,test\\.score\',
-  \'sink.connector\' = \'print\'
+  \'sink.connector\' = \'doris\'
 );', 'All Versions', 0, 1, '2023-10-31 16:02:21', '2023-12-28 00:02:57', null, null);
-INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (220, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE demo_doris_schema_evolution', 'The entire library is synchronized to doris tape mode evolution', 'EXECUTE CDCSOURCE demo_doris_schema_evolution WITH (
+INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (220, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE demo_doris_schema_evolution', 'The entire database is synchronized to doris tape mode evolution', 'EXECUTE CDCSOURCE demo_doris_schema_evolution WITH (
   \'connector\' = \'mysql-cdc\',
   \'hostname\' = \'127.0.0.1\',
   \'port\' = \'3306\',
@@ -340,7 +340,7 @@ INSERT INTO dinky_flink_document (id, category, type, subtype, name, description
   \'sink.sink.db\' = \'test\',
   \'sink.table.identifier\' = \'${schemaName}.${tableName}\'
 );', 'All Versions', 0, 1, '2023-10-31 16:04:53', '2023-12-28 00:02:57', null, null);
-INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (221, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE StarRocks ', 'The entire library is synchronized to StarRocks
+INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (221, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE Hudi ', 'The entire database is synchronized to Hudi
 ', 'EXECUTE CDCSOURCE demo_hudi WITH (
  \'connector\' = \'mysql-cdc\',
  \'hostname\' = \'127.0.0.1\',
@@ -382,7 +382,7 @@ INSERT INTO dinky_flink_document (id, category, type, subtype, name, description
  \'sink.hive_sync.table\'=\'${tableName}\',
  \'sink.table.prefix.schema\'=\'true\'
 );', 'All Versions', 0, 1, '2023-10-31 16:05:50', '2023-12-28 00:02:57', null, null);
-INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (222, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE cdc_mysql', 'The entire library is synchronized to mysql', 'EXECUTE CDCSOURCE demo_startrocks WITH (
+INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (222, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE cdc_startrocks', 'The entire database is synchronized to startrocks', 'EXECUTE CDCSOURCE demo_startrocks WITH (
   \'connector\' = \'mysql-cdc\',
   \'hostname\' = \'127.0.0.1\',
   \'port\' = \'3306\',
@@ -408,7 +408,7 @@ INSERT INTO dinky_flink_document (id, category, type, subtype, name, description
   \'sink.sink.buffer-flush.interval-ms\' = \'15000\',
   \'sink.sink.parallelism\' = \'1\'
 );', 'All Versions', 0, 1, '2023-10-31 16:07:08', '2023-12-28 00:02:57', null, null);
-INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (223, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE demo_doris', 'The entire library is synchronized to mysql', 'EXECUTE CDCSOURCE cdc_mysql WITH (
+INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (223, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE demo_mysql', 'The entire database is synchronized to mysql', 'EXECUTE CDCSOURCE cdc_mysql WITH (
  \'connector\' = \'mysql-cdc\',
  \'hostname\' = \'127.0.0.1\',
  \'port\' = \'3306\',
@@ -432,7 +432,7 @@ INSERT INTO dinky_flink_document (id, category, type, subtype, name, description
  \'sink.sink.max-retries\' = \'5\',
  \'sink.auto.create\' = \'true\'
 );', 'All Versions', 0, 1, '2023-10-31 16:07:47', '2023-12-28 00:02:57', null, null);
-INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (224, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE cdc_oracle', 'The entire library is synchronized to cdc_oracle', 'EXECUTE CDCSOURCE cdc_oracle WITH (
+INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (224, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE cdc_oracle', 'The entire database is synchronized to cdc_oracle', 'EXECUTE CDCSOURCE cdc_oracle WITH (
  \'connector\' = \'oracle-cdc\',
  \'hostname\' = \'127.0.0.1\',
  \'port\' = \'1521\',
@@ -449,7 +449,7 @@ INSERT INTO dinky_flink_document (id, category, type, subtype, name, description
  \'password\' = \'123456\',
  \'table-name\' = \'TEST2.${tableName}\'
 );', 'All Versions', 0, 1, '2023-10-31 16:08:30', '2023-12-28 00:02:57', null, null);
-INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (225, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE cdc_kafka_one', 'The entire library is synchronized to a topic in kafka', 'EXECUTE CDCSOURCE cdc_kafka_one WITH (
+INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (225, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE cdc_kafka_one', 'The entire database is synchronized to a topic in kafka', 'EXECUTE CDCSOURCE cdc_kafka_one WITH (
  \'connector\' = \'mysql-cdc\',
  \'hostname\' = \'127.0.0.1\',
  \'port\' = \'3306\',
@@ -463,7 +463,7 @@ INSERT INTO dinky_flink_document (id, category, type, subtype, name, description
  \'sink.topic\'=\'cdctest\',
  \'sink.brokers\'=\'bigdata2:9092,bigdata3:9092,bigdata4:9092\'
 );', 'All Versions', 0, 1, '2023-10-31 16:10:13', '2023-12-28 00:02:57', null, null);
-INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (226, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE cdc_kafka_mul', 'The entire library is synchronized to a single topic in kafka', 'EXECUTE CDCSOURCE cdc_kafka_mul WITH (
+INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (226, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE cdc_kafka_mul', 'The entire database is synchronized to a single topic in kafka', 'EXECUTE CDCSOURCE cdc_kafka_mul WITH (
  \'connector\' = \'mysql-cdc\',
  \'hostname\' = \'127.0.0.1\',
  \'port\' = \'3306\',
@@ -476,7 +476,7 @@ INSERT INTO dinky_flink_document (id, category, type, subtype, name, description
  \'sink.connector\'=\'datastream-kafka\',
  \'sink.brokers\'=\'bigdata2:9092,bigdata3:9092,bigdata4:9092\'
 )', 'All Versions', 0, 1, '2023-10-31 16:10:59', '2023-12-28 00:02:57', null, null);
-INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (227, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE cdc_upsert_kafka', 'The entire library is synchronized to kafka primary key mode', 'EXECUTE CDCSOURCE cdc_upsert_kafka WITH (
+INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (227, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE cdc_upsert_kafka', 'The entire database is synchronized to kafka primary key mode', 'EXECUTE CDCSOURCE cdc_upsert_kafka WITH (
  \'connector\' = \'mysql-cdc\',
  \'hostname\' = \'127.0.0.1\',
  \'port\' = \'3306\',
@@ -492,7 +492,7 @@ INSERT INTO dinky_flink_document (id, category, type, subtype, name, description
  \'sink.key.format\' = \'json\',
  \'sink.value.format\' = \'json\'
 );', 'All Versions', 0, 1, '2023-10-31 16:12:14', '2023-12-28 00:02:57', null, null);
-INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (228, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE cdc_postgresql ', 'The entire library is synchronized to postgresql', 'EXECUTE CDCSOURCE cdc_postgresql WITH (
+INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (228, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE cdc_postgresql ', 'The entire database is synchronized to postgresql', 'EXECUTE CDCSOURCE cdc_postgresql WITH (
  \'connector\' = \'mysql-cdc\',
  \'hostname\' = \'127.0.0.1\',
  \'port\' = \'3306\',
@@ -515,7 +515,7 @@ INSERT INTO dinky_flink_document (id, category, type, subtype, name, description
  \'sink.sink.buffer-flush.max-rows\' = \'100\',
  \'sink.sink.max-retries\' = \'5\'
 )', 'All Versions', 0, 1, '2023-10-31 16:12:54', '2023-12-28 00:02:57', null, null);
-INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (229, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE cdc_clickhouse', 'Sync the entire library to clickhouse', 'EXECUTE CDCSOURCE cdc_clickhouse WITH (
+INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (229, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE cdc_clickhouse', 'Sync the entire database to clickhouse', 'EXECUTE CDCSOURCE cdc_clickhouse WITH (
  \'connector\' = \'mysql-cdc\',
  \'hostname\' = \'127.0.0.1\',
  \'port\' = \'3306\',
@@ -538,7 +538,7 @@ INSERT INTO dinky_flink_document (id, category, type, subtype, name, description
   \'sink.sink.flush-interval\' = \'1000\',
   \'sink.sink.max-retries\' = \'3\'
 );', 'All Versions', 0, 1, '2023-10-31 16:13:33', '2023-12-28 00:02:57', null, null);
-INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (230, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE mysql2hive', 'The entire library is synchronized to the sql-catalog of hive', 'EXECUTE CDCSOURCE mysql2hive WITH (
+INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (230, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE mysql2hive', 'The entire database is synchronized to the sql-catalog of hive', 'EXECUTE CDCSOURCE mysql2hive WITH (
   \'connector\' = \'mysql-cdc\',
   \'hostname\' = \'127.0.0.1\',
   \'port\' = \'3306\',
@@ -554,7 +554,7 @@ INSERT INTO dinky_flink_document (id, category, type, subtype, name, description
   \'sink.default-database\' = \'hdb\',
   \'sink.hive-conf-dir\' = \'/usr/local/dlink/hive-conf\'
 );', 'All Versions', 0, 1, '2023-10-31 16:14:31', '2023-12-28 00:02:57', null, null);
-INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (231, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE  mysql2paimon', 'The entire library is synchronized to paimon', 'EXECUTE CDCSOURCE mysql2paimon WITH (
+INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (231, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE  mysql2paimon', 'The entire database is synchronized to paimon', 'EXECUTE CDCSOURCE mysql2paimon WITH (
   \'connector\' = \'mysql-cdc\',
   \'hostname\' = \'127.0.0.1\',
   \'port\' = \'3306\',
@@ -569,7 +569,7 @@ INSERT INTO dinky_flink_document (id, category, type, subtype, name, description
   \'sink.catalog.type\' = \'table-store\',
   \'sink.catalog.warehouse\'=\'file:/tmp/table_store\'
 );', 'All Versions', 0, 1, '2023-10-31 16:15:22', '2023-12-28 00:02:57', null, null);
-INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (232, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE mysql2dinky_catalog', 'The entire library is synchronized to dinky\'s built-in catalog', 'EXECUTE CDCSOURCE mysql2dinky_catalog WITH (
+INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (232, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE mysql2dinky_catalog', 'The entire database is synchronized to dinky\'s built-in catalog', 'EXECUTE CDCSOURCE mysql2dinky_catalog WITH (
   \'connector\' = \'mysql-cdc\',
   \'hostname\' = \'127.0.0.1\',
   \'port\' = \'3306\',
@@ -587,7 +587,7 @@ INSERT INTO dinky_flink_document (id, category, type, subtype, name, description
   \'sink.catalog.url\' = \'jdbc:mysql://127.0.0.1:3306/dlink?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC\',
   \'sink.sink.db\' = \'default_database\'
 );', 'All Versions', 0, 1, '2023-10-31 16:16:22', '2023-12-28 00:02:57', null, null);
-INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (233, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE mysql2multiple_sink', 'Synchronization of the entire library to multiple data sources (sink)', 'EXECUTE CDCSOURCE mysql2multiple_sink WITH (
+INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (233, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE mysql2multiple_sink', 'Synchronization of the entire database to multiple data sources (sink)', 'EXECUTE CDCSOURCE mysql2multiple_sink WITH (
   \'connector\' = \'mysql-cdc\',
   \'hostname\' = \'127.0.0.1\',
   \'port\' = \'3306\',
@@ -617,7 +617,7 @@ INSERT INTO dinky_flink_document (id, category, type, subtype, name, description
 INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (234, 'Reference', 'FUN_UDF', 'OTHER_FUNCTION', 'ADD JAR', 'ADD JAR', 'ADD JAR ${1:}; -- str path ', 'All Versions', 0, 1, '2023-10-31 16:19:52', '2023-12-28 00:02:02', null, null);
 INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (235, 'Function', 'Other', 'Other', 'SHOW FRAGMENTS', 'SHOW FRAGMENTS', 'SHOW FRAGMENTS;', 'All Versions', 0, 1, '2023-10-31 16:20:30', '2023-12-28 09:57:55', null, null);
 INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (236, 'Function', 'Other', 'Other', 'SHOW FRAGMENT var1', 'SHOW FRAGMENT var1', 'SHOW FRAGMENT ${1:};', 'All Versions', 0, 1, '2023-10-31 16:21:23', '2023-12-28 09:57:54', null, null);
-INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (237, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE demo_hudi', 'The entire library is synchronized to hudi', 'EXECUTE CDCSOURCE demo_hudi WITH (
+INSERT INTO dinky_flink_document (id, category, type, subtype, name, description, fill_value, version, like_num, enabled, create_time, update_time, creator, updater) VALUES (237, 'Reference', 'SQL_TEMPLATE', 'FlinkCDC', 'EXECUTE CDCSOURCE demo_hudi', 'The entire database is synchronized to hudi', 'EXECUTE CDCSOURCE demo_hudi WITH (
  \'connector\' = \'mysql-cdc\',
  \'hostname\' = \'127.0.0.1\',
  \'port\' = \'3306\',
