@@ -71,9 +71,9 @@ sink，也可以使用 FlinkSQL 无需修改代码直接扩展新的 sink。
 
 ```
 # 将下面 Dinky根目录下 整库同步依赖包放置 $FLINK_HOME/lib下
-extends/flink${version}/dlink-client-base-${version}.jar
-lib/dlink-common-${version}.jar
-extends/flink${flink-version}/dlink-client-${version}.jar
+lib/dinky-client-base-${version}.jar
+lib/dinky-common-${version}.jar
+extends/flink${flink-version}/dinky-client-${version}.jar
 ```
 
 ### Application 模式提交
@@ -111,7 +111,7 @@ add customjar 'flink-sql-connector-mysql-cdc-2.3.0.jar'
 | password                       | 是    | 无             | 连接到数据库服务器时要使用的数据库的密码                                                                                                         |
 | scan.startup.mode              | 否    | latest-offset | 消费者的可选启动模式，有效枚举为“initial”和“latest-offset”                                                                                    |
 | database-name                  | 否    | 无             | 此参数非必填                                                                                                                       |
-| table-name                     | 否    | 无             | 只支持正则,示例:"test\\.student,test\\.score"，所有表示例:"test\\..*"                                                                     |
+| table-name                     | 是    | 无             | 只支持正则,示例:"test\\.student,test\\.score"，所有表示例:"test\\..*"                                                                     |
 | source.*                       | 否    | 无             | 指定个性化的 CDC 配置，如 source.server-time-zone 即为 server-time-zone 配置参数。                                                            |
 | debezium.*                     | 否    | 无             | 支持debezium参数，示例:`'debezium.skipped.operations'='d'` 即过滤源数据库删除操作日志。                                                           |
 | jdbc.properties.*              | 否    | 无             | 连接jdbc的url参数，示例:'jdbc.properties.useSSL' = 'false' 连接url效果: jdbc:mysql://ip:3306/db?useSSL=false 数据库连接参数                     |

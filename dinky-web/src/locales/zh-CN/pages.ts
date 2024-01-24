@@ -53,6 +53,7 @@ export default {
    * */
 
   'catalog.name': '作业名称',
+  'catalog.useTemplate': '使用模板',
   'catalog.name.placeholder': '请输入作业名称',
   'catalog.name.validate.error': '作业名称不允许出现 _ 字符,K8s 命名规范',
   'catalog.name.tip': '此名称可作为 FlinkSql 任务的 JobName',
@@ -82,7 +83,7 @@ export default {
   'datastudio.middle.qg.gitprojects': 'Git 项目',
   'datastudio.middle.qg.resource': '资源',
   'datastudio.middle.qg.udf': 'UDF',
-  'datastudio.header.pushdolphin.title': '将任务 [ {name} ]推送至 DolphinScheduler',
+  'datastudio.header.pushdolphin.title': '将任务 [ {name} ] 推送至 DolphinScheduler',
   'datastudio.header.pushdolphin.taskId': 'Dinky任务编码',
   'datastudio.header.pushdolphin.taskName': 'Task名称: {name}',
   'datastudio.header.pushdolphin.taskNameExt':
@@ -99,7 +100,7 @@ export default {
   'datastudio.header.pushdolphin.timeoutFlag': '超时告警',
   'datastudio.header.pushdolphin.timeoutFlag.warn': '超时告警',
   'datastudio.header.pushdolphin.timeoutFlag.failed': '超时失败',
-  'datastudio.header.pushdolphin.timeoutFlagTip': '请选择超时警告',
+  'datastudio.header.pushdolphin.timeoutFlagTip': '请选择超时告警',
   'datastudio.header.pushdolphin.flag': '运行标志',
   'datastudio.header.pushdolphin.flagTip': '请选择运行标志',
   'datastudio.header.pushdolphin.isCache': '缓存执行',
@@ -176,14 +177,14 @@ export default {
   'devops.jobinfo.config.RestartStrategy': '重启策略',
   'devops.jobinfo.config.UserCustomConf': '用户自定义配置',
   'devops.jobinfo.config.execmode': '执行模式',
-  'devops.jobinfo.config.savePointPath': 'savePoint路径',
+  'devops.jobinfo.config.savePointPath': 'Savepoint路径',
   'devops.jobinfo.config.startFromSavePoint': '从Savepoint启动',
   'devops.jobinfo.config.submitType': '提交模式',
   'devops.jobinfo.config.taskId': 'Dinky作业ID',
   'devops.jobinfo.config.useSqlFragment': '语句集',
   'devops.jobinfo.job.key': '{key} 任务',
   'devops.jobinfo.job.key.success': '{key} 成功',
-  'devops.jobinfo.job.keyConfirm': '确定{key} 该作业吗？',
+  'devops.jobinfo.job.keyConfirm': '确定 {key} 该作业吗？',
   'devops.jobinfo.metrics.configMetrics': '任务监控配置',
   'devops.jobinfo.metrics.metricsItems': '监控项列表',
   'devops.jobinfo.metrics.selected': '已选择',
@@ -269,8 +270,8 @@ export default {
    * */
 
   'login.chooseTenant': '请选择租户',
-  'login.chooseTenantFailed': '租户选择失败，请检查。。。',
-  'login.chooseTenantSuccess': '{msg}，使用【 {tenantCode} 】进入系统，加载中。。。',
+  'login.chooseTenantFailed': '租户选择失败，请检查...',
+  'login.chooseTenantSuccess': '{msg}，使用【 {tenantCode} 】进入系统，加载中...',
   'login.ldapLogin': 'LDAP登录',
   'login.notbindtenant': '您还没有绑定租户，请联系管理员',
   'login.password.placeholder': '密码',
@@ -305,7 +306,7 @@ export default {
   'menu.tips.2': '添加根菜单',
   'menu.tips.3': '新增/删除子菜单',
   'menu.type': '菜单类型',
-  'menu.type.button': '按钮',
+  'menu.type.button': '按钮/区块',
   'menu.type.dir': '目录',
   'menu.type.menu': '菜单',
   'menu.typePlaceholder': '请选择菜单类型',
@@ -337,7 +338,7 @@ export default {
   'metrics.dinky.not.open':
     '暂未开启 Dinky Server 监控, 请前往 配置中心 -> 全局配置 -> Metrics 配置 -> Dinky JVM Monitor 开关 进行开启',
   'metrics.flink.deleteConfirm':
-    '确认删除该任务下的监控数据吗? \n注意:该操作会同步影响运维中心该任务的监控数据!!\n请谨慎操作,该操作不可撤销!',
+    '确认删除该任务下的监控数据吗? \n注意:该操作会同步影响运维中心该任务的监控数据!!\n请谨慎操作,该操作不可撤消!',
   /**
    *
    * pages
@@ -358,6 +359,8 @@ export default {
   'pages.datastudio.editor.stop': '停止',
   'pages.datastudio.editor.stop.job': '停止作业',
   'pages.datastudio.editor.stop.jobConfirm': '确定停止作业【{jobName}】吗？',
+  'pages.datastudio.editor.stop.force.jobConfirm':
+    '当前作业【{jobName}】连接到集群获取信息失败，无法进行停止操作，确定强制修改状态吗？',
   'pages.datastudio.editor.submitting': '新任务【{jobName}】正在执行',
   'pages.datastudio.editor.checking': '任务【{jobName}】正在检查',
   'pages.datastudio.editor.debugging': '新任务【{jobName}】正在调试',
@@ -407,8 +410,8 @@ export default {
   'pages.datastudio.label.jobConfig.addConfig': '添加配置项',
   'pages.datastudio.label.jobConfig.addConfig.params': '参数',
   'pages.datastudio.label.jobConfig.addConfig.value': '值',
-  'pages.datastudio.label.jobConfig.alertGroup': '报警组',
-  'pages.datastudio.label.jobConfig.alertGroup.tip': '选择报警组',
+  'pages.datastudio.label.jobConfig.alertGroup': '告警组',
+  'pages.datastudio.label.jobConfig.alertGroup.tip': '选择告警组',
   'pages.datastudio.label.jobConfig.batchmode': '批模式',
   'pages.datastudio.label.jobConfig.batchmode.tip': '使用批模式',
   'pages.datastudio.label.jobConfig.cluster': 'Flink集群',
@@ -419,6 +422,7 @@ export default {
   'pages.datastudio.label.jobConfig.clusterConfig.tip2':
     '如下拉框无数据,请先配置/新建集群实例,或者检查集群配置/集群实例是否为健康可用状态',
   'pages.datastudio.label.jobConfig.execmode.tip': '指定 Flink 任务的执行模式，默认为 Local',
+  'pages.datastudio.label.jobConfig.watermark': '当前任务已发布，配置禁止修改，如需修改，请先下线',
   'pages.datastudio.label.jobConfig.flinksql.env': 'FlinkSQL 环境',
   'pages.datastudio.label.jobConfig.flinksql.env.tip1':
     '选择当前任务的 FlinkSQL 执行环境，会提前执行环境语句，默认无。',
@@ -435,7 +439,7 @@ export default {
   'pages.datastudio.label.jobConfig.savePointStrategy.tip': '指定 Savepoint 策略，默认为禁用',
   'pages.datastudio.label.jobConfig.savePointpath': 'Savepoint路径',
   'pages.datastudio.label.jobConfig.savePointpath.tip1': '从SavepointPath恢复Flink任务',
-  'pages.datastudio.label.jobConfig.savePointpath.tip2': 'hdfs',
+  'pages.datastudio.label.jobConfig.savePointpath.tip2': 'HDFS',
   'pages.datastudio.label.jobInfo.dialect': '方言',
   'pages.datastudio.label.jobInfo.id': '任务ID',
   'pages.datastudio.label.jobInfo.name': '任务名称',
@@ -696,7 +700,7 @@ export default {
   'rc.cc.flinkConfig': 'Flink 配置',
   'rc.cc.flinkConfigPath': 'Flink 配置文件路径',
   'rc.cc.flinkConfigPathHelp':
-    '仅指定到文件夹，dinky会自行读取文件夹下的配置文件，k8s模式下此参数可选填',
+    '仅指定到文件夹，dinky会自行读取文件夹下的配置文件，K8s模式下此参数可选填',
   'rc.cc.flinkConfigPathPlaceholder': '请输入 flink-conf.yaml 路径！值如 /opt/module/flink/conf ',
   'rc.cc.hadoop.defineConfig': 'Hadoop 自定义配置（高优先级）',
   'rc.cc.hadoopConfig': 'Hadoop 配置',
@@ -727,7 +731,7 @@ export default {
   'rc.cc.key': '配置项',
   'rc.cc.libPath': 'Flink Lib 路径',
   'rc.cc.libPathHelp': '指定 lib 的 hdfs 路径（末尾无/），需要包含 Flink 运行时的依赖',
-  'rc.cc.libPathPlaceholder': '请输入 lib 的 hdfs 路径！值如 hdfs',
+  'rc.cc.libPathPlaceholder': '请输入 lib 的 HDFS 路径！值如 hdfs',
   'rc.cc.management': '集群配置管理',
   'rc.cc.modify': '修改集群配置',
   'rc.cc.name': '集群配置名称',
@@ -852,7 +856,7 @@ export default {
   'rc.ds.type': '数据源类型',
   'rc.ds.typePlaceholder': '请选择数据源类型! 输入关键词搜索',
   'rc.ds.url': '数据库连接 URL',
-  'rc.ds.urlPlaceholder': '请输入格式正确的 url 连接!',
+  'rc.ds.urlPlaceholder': '请输入格式正确的 URL 连接!',
   'rc.ds.username': '用户名',
   'rc.ds.usernamePlaceholder': '请输入用户名!',
   'rc.ds.warehouse': '数仓',
@@ -1031,7 +1035,7 @@ export default {
   'sys.setting.ds': 'DolphinScheduler 配置',
   'sys.setting.ds.tooltip': '海豚调度插件设置，可以让您把dinky任务丝滑推到海豚调度器工作流上',
   'sys.setting.flink': 'Flink 配置',
-  'sys.setting.flink.tooltip': 'Dinky对接 Flink 主要参数',
+  'sys.setting.flink.tooltip': 'Dinky 对接 Flink 主要参数',
   'sys.setting.ldap': 'LDAP 配置',
   'sys.setting.ldap.tooltip': 'LDAP统一认证配置',
   'sys.setting.maven': 'Maven 配置',

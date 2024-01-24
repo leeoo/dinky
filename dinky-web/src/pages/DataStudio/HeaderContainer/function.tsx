@@ -18,7 +18,7 @@
  */
 
 import { TabsPageType, TaskDataType } from '@/pages/DataStudio/model';
-import { JOB_LIFE_CYCLE, JOB_STATUS } from '@/pages/DevOps/constants';
+import { JOB_LIFE_CYCLE } from '@/pages/DevOps/constants';
 import { DIALECT } from '@/services/constants';
 
 /**
@@ -43,14 +43,9 @@ export const isOnline = (data: TaskDataType | undefined) => {
   return data ? JOB_LIFE_CYCLE.PUBLISH == data.step : false;
 };
 
-export const isRunning = (data: TaskDataType | undefined) => {
-  return data ? JOB_STATUS.RUNNING == data.status : false;
-};
-
 export const isCanPushDolphin = (data: TaskDataType | undefined) => {
   return data
     ? JOB_LIFE_CYCLE.PUBLISH === data.step &&
-        !isSql(data?.dialect) &&
         data?.dialect?.toLowerCase() !== DIALECT.FLINKSQLENV &&
         data?.dialect?.toLowerCase() !== DIALECT.SCALA &&
         data?.dialect?.toLowerCase() !== DIALECT.JAVA &&

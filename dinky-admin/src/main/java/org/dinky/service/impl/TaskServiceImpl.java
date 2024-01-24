@@ -176,15 +176,6 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
 
         Assert.notNull(task, Status.TASK_NOT_EXIST.getMessage());
 
-        if (!Dialect.isCommonSql(task.getDialect())
-                && Asserts.isNotNull(task.getJobInstanceId())
-                && task.getJobInstanceId() > 0) {
-            JobInstance jobInstance = jobInstanceService.getById(task.getJobInstanceId());
-            if (jobInstance != null && !JobStatus.isDone(jobInstance.getStatus())) {
-                throw new BusException(Status.TASK_STATUS_IS_NOT_DONE.getMessage());
-            }
-        }
-
         if (StringUtils.isNotBlank(submitDto.getSavePointPath())) {
             task.setSavePointStrategy(SavePointStrategy.CUSTOM.getValue());
             task.setSavePointPath(submitDto.getSavePointPath());
@@ -378,7 +369,7 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
                 JobManager jobManager = JobManager.build(buildJobConfig(task));
                 // If a user specifies a savepoint, the savepoint is not automatically triggered
                 if (useSavepoint) {
-                    jobManager.cancelNormal(jobInstance.getJid());
+                    cancelTaskJob(task, false, true);
                 } else {
                     log.info("stop {}  with savepoint", jobInstance.getName());
                     SavePointResult savePointResult = savepointTaskJob(task, SavePointType.CANCEL);
@@ -413,7 +404,7 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
     }
 
     @Override
-    public boolean cancelTaskJob(TaskDTO task, boolean withSavePoint) {
+    public boolean cancelTaskJob(TaskDTO task, boolean withSavePoint, boolean forceCancel) {
         if (Dialect.isCommonSql(task.getDialect())) {
             return true;
         }
@@ -422,7 +413,19 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
         ClusterInstance clusterInstance = clusterInstanceService.getById(jobInstance.getClusterId());
         Assert.notNull(clusterInstance, Status.CLUSTER_NOT_EXIST.getMessage());
 
-        JobManager jobManager = JobManager.build(buildJobConfig(task));
+        JobManager jobManager;
+        try {
+            jobManager = JobManager.build(buildJobConfig(task));
+        } catch (Exception e) {
+            log.error("cancelTaskJob error:{}", e.getMessage());
+            if (forceCancel) {
+                jobInstance.setStatus(JobStatus.UNKNOWN.getValue());
+                jobInstanceService.updateById(jobInstance);
+                return true;
+            } else {
+                throw e;
+            }
+        }
 
         boolean isSuccess;
         try {
@@ -527,6 +530,10 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
                 taskDTO.setStatus(jobInstance.getStatus());
             }
         }
+        if (!Asserts.isNull(taskDTO.getAlertGroupId())) {
+            AlertGroup alertGroup = alertGroupService.getAlertGroupInfo(taskDTO.getAlertGroupId());
+            taskDTO.setAlertGroup(alertGroup);
+        }
         return taskDTO;
     }
 
@@ -544,16 +551,6 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
         TaskDTO task = getTaskInfoById(taskId);
         task.setStep(lifeCycle.getValue());
         if (lifeCycle == JobLifeCycle.PUBLISH) {
-            //            List<SqlExplainResult> sqlExplainResults = explainTask(task);
-            //            for (SqlExplainResult sqlExplainResult : sqlExplainResults) {
-            //                if (!sqlExplainResult.isParseTrue() || !sqlExplainResult.isExplainTrue()) {
-            //                    throw new SqlExplainExcepition(StrFormatter.format(
-            //                            "task [{}] sql explain failed, sql [{}], error: [{}]",
-            //                            task.getName(),
-            //                            sqlExplainResult.getSql(),
-            //                            sqlExplainResult.getError()));
-            //                }
-            //            }
             Integer taskVersionId = taskVersionService.createTaskVersionSnapshot(task);
             task.setVersionId(taskVersionId);
         }
@@ -567,7 +564,7 @@ public class TaskServiceImpl extends SuperServiceImpl<TaskMapper, Task> implemen
                 log.warn(
                         "JobInstance [{}] step change to [{}] ,Trigger Force Refresh",
                         jobInstance.getName(),
-                        lifeCycle.getValue());
+                        lifeCycle.name());
             }
         }
         return saved;
