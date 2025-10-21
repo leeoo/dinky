@@ -37,7 +37,6 @@ import org.dinky.data.result.ErrorResult;
 import org.dinky.data.result.ExplainResult;
 import org.dinky.data.result.IResult;
 import org.dinky.data.result.ResultBuilder;
-import org.dinky.data.result.ResultPool;
 import org.dinky.data.result.SelectResult;
 import org.dinky.executor.Executor;
 import org.dinky.executor.ExecutorConfig;
@@ -52,6 +51,11 @@ import org.dinky.gateway.enums.SavePointType;
 import org.dinky.gateway.result.GatewayResult;
 import org.dinky.gateway.result.SavePointResult;
 import org.dinky.gateway.result.TestResult;
+import org.dinky.sandbox.Sandbox;
+import org.dinky.sandbox.SandboxFactory;
+import org.dinky.sandbox.metadata.TableId;
+import org.dinky.sandbox.metadata.TableInfo;
+import org.dinky.sandbox.metadata.Tuple;
 import org.dinky.trans.Operations;
 import org.dinky.trans.parse.AddFileSqlParseStrategy;
 import org.dinky.trans.parse.AddJarSqlParseStrategy;
@@ -77,7 +81,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -95,6 +98,7 @@ public class JobManager {
     private Executor executor;
     private boolean useGateway = false;
     private boolean isPlanMode = false;
+    private boolean isPlannerLoader = true;
     private boolean useStatementSet = false;
     private boolean useMockSinkFunction = false;
     private boolean useRestAPI = false;
@@ -145,6 +149,14 @@ public class JobManager {
 
     public boolean isPlanMode() {
         return isPlanMode;
+    }
+
+    public boolean isPlannerLoader() {
+        return isPlannerLoader;
+    }
+
+    public void setPlannerLoader(boolean plannerLoader) {
+        isPlannerLoader = plannerLoader;
     }
 
     public boolean isUseStatementSet() {
@@ -201,6 +213,15 @@ public class JobManager {
         return manager;
     }
 
+    public static JobManager buildPlanModeWithPlanner(JobConfig config) {
+        JobManager manager = new JobManager(config);
+        manager.setPlanMode(true);
+        manager.setPlannerLoader(false);
+        manager.init();
+        log.info("Build Flink plan mode with planner success.");
+        return manager;
+    }
+
     public void init() {
         if (!isPlanMode) {
             runMode = GatewayType.get(config.getType());
@@ -212,8 +233,11 @@ public class JobManager {
         useRestAPI = SystemConfiguration.getInstances().isUseRestAPI();
         executorConfig = config.getExecutorSetting();
         executorConfig.setPlan(isPlanMode);
-        executor = ExecutorFactory.buildExecutor(executorConfig, getDinkyClassLoader());
-        DinkyClassLoaderUtil.initClassLoader(config, getDinkyClassLoader());
+        executorConfig.setUseFlinkPlanner(!isPlannerLoader);
+        DinkyClassLoader dinkyClassLoaderWithPlanner = getDinkyClassLoader();
+        Thread.currentThread().setContextClassLoader(dinkyClassLoaderWithPlanner);
+        executor = ExecutorFactory.buildExecutor(executorConfig, dinkyClassLoaderWithPlanner);
+        DinkyClassLoaderUtil.initClassLoader(config, dinkyClassLoaderWithPlanner);
     }
 
     private boolean ready() {
@@ -340,12 +364,16 @@ public class JobManager {
     }
 
     public static SelectResult getJobData(String jobId) {
-        SelectResult selectResult = ResultPool.get(jobId);
-        if (Objects.isNull(selectResult) || selectResult.isDestroyed()) {
+        Sandbox sandbox = SandboxFactory.getDefaultSandbox();
+        TableId tableId = TableId.withPrivate(jobId);
+        if (sandbox.existTable(tableId)) {
+            TableInfo tableInfo = sandbox.getTableInfo(tableId);
+            List<Tuple> data = sandbox.getData(tableId);
+            return SelectResult.buildBySandbox(jobId, tableInfo, data);
+        } else {
             JobReadHandler readHandler = JobHandler.build().getReadHandler();
             return readHandler.readResultDataFromStorage(Integer.parseInt(jobId));
         }
-        return selectResult;
     }
 
     public ExplainResult explainSql(String statement) {

@@ -20,12 +20,19 @@
 package org.dinky.data.result;
 
 import org.dinky.job.JobHandler;
+import org.dinky.sandbox.Sandbox;
+import org.dinky.sandbox.SandboxFactory;
+import org.dinky.sandbox.metadata.ColumnInfo;
+import org.dinky.sandbox.metadata.TableId;
+import org.dinky.sandbox.metadata.TableType;
+import org.dinky.sandbox.metadata.Tuple;
 import org.dinky.utils.FlinkUtil;
 
 import org.apache.flink.table.api.TableResult;
 import org.apache.flink.types.Row;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -33,8 +40,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 /**
@@ -46,8 +53,11 @@ public class ShowResultBuilder extends AbstractResultBuilder implements ResultBu
 
     private String nullColumn = "";
 
+    private final Sandbox sandbox;
+
     public ShowResultBuilder(String id) {
         this.id = id;
+        this.sandbox = SandboxFactory.getDefaultSandbox();
     }
 
     @Override
@@ -69,7 +79,7 @@ public class ShowResultBuilder extends AbstractResultBuilder implements ResultBu
             }
             rows.add(map);
         }
-        return new org.dinky.data.result.DDLResult(rows, rows.size(), column);
+        return new DDLResult(rows, rows.size(), column);
     }
 
     /**
@@ -89,12 +99,15 @@ public class ShowResultBuilder extends AbstractResultBuilder implements ResultBu
         SelectResult selectResult =
                 new SelectResult(id, ddlResult.getRowData(), Sets.newLinkedHashSet(ddlResult.getColumns()));
         selectResult.setDestroyed(Boolean.TRUE);
-        try {
-            ResultPool.put(selectResult);
-            jobHandler.persistResultData(Lists.newArrayList(this.id));
-        } finally {
-            ResultPool.remove(id);
-        }
+        List<ColumnInfo> columnInfos = ddlResult.getColumns().stream()
+                .map(column -> ColumnInfo.withString(column))
+                .collect(Collectors.toList());
+        sandbox.registerTable(TableId.withPrivate(id), TableType.APPEND_TABLE, columnInfos);
+        List<Tuple> tuples = ddlResult.getRowData().stream()
+                .map(row -> new Tuple(row.values().toArray()))
+                .collect(Collectors.toList());
+        sandbox.appendData(TableId.withPrivate(id), tuples);
+        jobHandler.persistResultData(Collections.singletonList(id));
         return selectResult;
     }
 }

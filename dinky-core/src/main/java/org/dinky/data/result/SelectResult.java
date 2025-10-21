@@ -19,10 +19,14 @@
 
 package org.dinky.data.result;
 
+import org.dinky.sandbox.metadata.TableInfo;
+import org.dinky.sandbox.metadata.TableType;
+import org.dinky.sandbox.metadata.Tuple;
 import org.dinky.utils.JsonUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -48,9 +52,9 @@ import lombok.extern.slf4j.Slf4j;
 public class SelectResult extends AbstractResult implements IResult {
 
     private String jobID;
+    private String tableName;
     private List<Map<String, Object>> rowData;
     private Integer total;
-    private Integer currentCount;
     private LinkedHashSet<String> columns;
     private boolean isDestroyed;
     private boolean truncationFlag = false;
@@ -59,16 +63,25 @@ public class SelectResult extends AbstractResult implements IResult {
     public SelectResult(
             List<Map<String, Object>> rowData,
             Integer total,
-            Integer currentCount,
             LinkedHashSet<String> columns,
             String jobID,
             boolean success) {
         this.rowData = rowData;
         this.total = total;
-        this.currentCount = currentCount;
         this.columns = columns;
         this.jobID = jobID;
         this.success = success;
+        this.isDestroyed = false;
+    }
+
+    public SelectResult(
+            String jobID, String tableName, List<Map<String, Object>> rowData, LinkedHashSet<String> columns) {
+        this.jobID = jobID;
+        this.tableName = tableName;
+        this.rowData = rowData;
+        this.total = rowData.size();
+        this.columns = columns;
+        this.success = true;
         this.isDestroyed = false;
     }
 
@@ -151,5 +164,34 @@ public class SelectResult extends AbstractResult implements IResult {
         SelectResult selectResult = new SelectResult(jobID, new ArrayList<>(), new LinkedHashSet<>());
         selectResult.setMockSinkResult(true);
         return selectResult;
+    }
+
+    public static SelectResult buildBySandbox(String jobID, TableInfo tableInfo, List<Tuple> data) {
+        if (tableInfo == null) {
+            return SelectResult.buildDestruction(jobID);
+        }
+        LinkedHashSet<String> columns = new LinkedHashSet<>();
+        tableInfo.getColumns().forEach(columnInfo -> {
+            columns.add(columnInfo.getName());
+        });
+        if (columns.isEmpty()) {
+            if (data.size() > 0) {
+                if (TableType.CHANGE_LOG.equals(tableInfo.getTableType())) {
+                    columns.add("__op__");
+                }
+                for (int i = 0; i < data.get(0).size(); i++) {
+                    columns.add("f" + i);
+                }
+            }
+        }
+        List<Map<String, Object>> rowData = new ArrayList<>();
+        data.forEach(tuple -> {
+            Map<String, Object> map = new HashMap<>();
+            for (int i = 0; i < tuple.size(); i++) {
+                map.put(tableInfo.getColumns().get(i).getName(), tuple.get(i));
+            }
+            rowData.add(map);
+        });
+        return new SelectResult(jobID, tableInfo.getTableId().identifier(), rowData, columns);
     }
 }

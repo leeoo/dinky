@@ -19,8 +19,11 @@
 
 package org.dinky.metadata.driver;
 
+import static org.dinky.metadata.convert.SqlToPaimonPredicateConverter.convertSqlWhereToPaimonPredicate;
+import static org.dinky.metadata.convert.SqlToPaimonPredicateConverter.convertToPlainSelect;
+
+import org.dinky.assertion.Asserts;
 import org.dinky.data.constant.CommonConstant;
-import org.dinky.data.enums.ColumnType;
 import org.dinky.data.exception.BusException;
 import org.dinky.data.model.Column;
 import org.dinky.data.model.QueryData;
@@ -41,7 +44,9 @@ import org.apache.paimon.catalog.CatalogFactory;
 import org.apache.paimon.catalog.Identifier;
 import org.apache.paimon.data.InternalRow;
 import org.apache.paimon.options.Options;
+import org.apache.paimon.predicate.Predicate;
 import org.apache.paimon.reader.RecordReader;
+import org.apache.paimon.shade.org.apache.commons.lang.StringUtils;
 import org.apache.paimon.table.source.ReadBuilder;
 import org.apache.paimon.table.source.Split;
 import org.apache.paimon.table.source.TableRead;
@@ -52,11 +57,11 @@ import org.apache.paimon.utils.CloseableIterator;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import lombok.extern.slf4j.Slf4j;
+import net.sf.jsqlparser.statement.select.PlainSelect;
 
 /**
  * MysqlDriver
@@ -85,10 +90,18 @@ public class PaimonDriver extends AbstractDriver<PaimonConfig> {
             // Paimon无法做到分页，所以这里逻辑只取前N条
             int length = option.getLimitEnd() - option.getLimitStart();
             readBuilder.withLimit(length);
+            String where = queryData.getOption().getWhere();
+            if (StringUtils.isNotBlank(where)) {
+                RowType paimonRowType = table.rowType();
+                PlainSelect plainSelect = convertToPlainSelect(
+                        String.format("select * from %s where %s", queryData.getTableName(), where));
+                Predicate predicate = convertSqlWhereToPaimonPredicate(paimonRowType, plainSelect);
+                readBuilder.withFilter(predicate);
+            }
             List<Split> splits = readBuilder.newScan().plan().splits();
 
             // 4. Read a split in task
-            TableRead read = readBuilder.newRead();
+            TableRead read = readBuilder.newRead().executeFilter();
             List<LinkedHashMap<String, Object>> datas;
             try (RecordReader<InternalRow> reader = read.createReader(splits)) {
                 datas = new ArrayList<>();
@@ -176,12 +189,15 @@ public class PaimonDriver extends AbstractDriver<PaimonConfig> {
 
     @Override
     public boolean existSchema(String schemaName) {
-        return false;
+        return catalog.listDatabases().contains(schemaName);
     }
 
     @Override
     public boolean createSchema(String schemaName) throws Exception {
-        return false;
+        if (!existSchema(schemaName)) {
+            catalog.createDatabase(schemaName, true);
+        }
+        return true;
     }
 
     @Override
@@ -224,12 +240,13 @@ public class PaimonDriver extends AbstractDriver<PaimonConfig> {
                 Column column = new Column();
                 column.setName(field.name());
                 column.setType(field.type().toString());
+                column.setNullable(field.type().isNullable());
                 column.setComment(field.description());
                 // TODO: 使用CovertType
-                column.setJavaType(ColumnType.STRING);
+                column.setDataType(getTypeConvert().convert(column));
                 column.setKeyFlag(primaryKeys.contains(field.name()));
-                //                column.setPartaionKey(partitionKeys.contains(field.name()));
-                column.setNullable(field.type().isNullable());
+                //
+                // column.setPartaionKey(partitionKeys.contains(field.name()));
                 columns.add(column);
             }
             tableBuilder
@@ -262,12 +279,9 @@ public class PaimonDriver extends AbstractDriver<PaimonConfig> {
     }
 
     @Override
-    public boolean generateCreateTable(Table table) throws Exception {
-        return false;
-    }
-
-    @Override
     public boolean dropTable(Table table) throws Exception {
+        Identifier identifier = Identifier.create(table.getSchema(), table.getName());
+        catalog.dropTable(identifier, true);
         return false;
     }
 
@@ -292,11 +306,6 @@ public class PaimonDriver extends AbstractDriver<PaimonConfig> {
     }
 
     @Override
-    public String generateCreateTableSql(Table table) {
-        return null;
-    }
-
-    @Override
     public boolean execute(String sql) throws Exception {
         return false;
     }
@@ -313,7 +322,26 @@ public class PaimonDriver extends AbstractDriver<PaimonConfig> {
 
     @Override
     public StringBuilder genQueryOption(QueryData queryData) {
-        return null;
+        StringBuilder optionBuilder = new StringBuilder()
+                .append("select * from ")
+                .append(queryData.getSchemaName())
+                .append(".")
+                .append(queryData.getTableName());
+
+        if (Asserts.isNotNull(queryData.getOption())) {
+            String where = queryData.getOption().getWhere();
+            if (Asserts.isNotNullString(where)) {
+                optionBuilder.append(" where ").append(where);
+            }
+            String order = queryData.getOption().getOrder();
+            if (Asserts.isNotNullString(order)) {
+                optionBuilder.append(" order by ").append(order);
+            }
+            int limitStart = queryData.getOption().getLimitStart();
+            int limitEnd = queryData.getOption().getLimitEnd();
+            optionBuilder.append(" limit ").append(limitStart).append(",").append(limitEnd);
+        }
+        return optionBuilder;
     }
 
     @Override
@@ -327,12 +355,11 @@ public class PaimonDriver extends AbstractDriver<PaimonConfig> {
     }
 
     @Override
-    public Map<String, String> getFlinkColumnTypeConversion() {
+    public Stream<JdbcSelectResult> StreamExecuteSql(String statement, Integer maxRowNum) {
         return null;
     }
 
-    @Override
-    public Stream<JdbcSelectResult> StreamExecuteSql(String statement, Integer maxRowNum) {
-        return null;
+    public Catalog getCatalog() {
+        return catalog;
     }
 }

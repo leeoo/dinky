@@ -855,7 +855,6 @@ export default {
   'rc.ci.jmha.tips':
     '添加 Flink 集群的 JobManager 的 RestApi 地址。当 HA 模式时，地址间用英文逗号分隔，例如：192.168.123.101:8081',
   'rc.ci.jmha.validate.port': '不符合规则! 端口号区间[0-65535]',
-  'rc.ci.jmha.validate.slash': '不符合规则! 不能包含/',
   'rc.ci.jmhaPlaceholder': '请输入 JobManager HA 地址!',
   'rc.ci.management': '集群实例管理',
   'rc.ci.modify': '修改集群',
@@ -947,7 +946,7 @@ export default {
   'rc.ds.groupName': '分组类型',
   'rc.ds.groupNamePlaceholder': '请选择分组类型!',
   'rc.ds.isNull': '非空',
-  'rc.ds.javaType': 'Java 类型',
+  'rc.ds.dataType': 'Data 类型',
   'rc.ds.length': '长度',
   'rc.ds.management': '数据源管理',
   'rc.ds.modify': '修改数据源',
